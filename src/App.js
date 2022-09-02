@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import twitterLogo from './assets/twitter-logo.svg';
 import './App.css';
 
@@ -7,6 +7,9 @@ const TWITTER_HANDLE = '_buildspace';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const App = () => {
+  // State
+  const [walletAddress, setWalletAddress] = useState(null);
+
   // Actions
   const checkIfWalletIsConnected = async () => {
     try {
@@ -20,6 +23,11 @@ const App = () => {
             'Connected with Public Key:',
             response.publicKey.toString()
           );
+
+          /*
+           * Set the user's publicKey in state to be used later!
+           */
+          setWalletAddress(response.publicKey.toString());
         }
       } else {
         alert('Solana object not found! Get a Phantom Wallet 👻');
@@ -29,16 +37,8 @@ const App = () => {
     }
   };
 
-  /*
-   * Let's define this method so our code doesn't break.
-   * We will write the logic for this next!
-   */
   const connectWallet = async () => {};
 
-  /*
-   * We want to render this UI when the user hasn't connected
-   * their wallet to our app yet.
-   */
   const renderNotConnectedContainer = () => (
     <button
       className="cta-button connect-wallet-button"
@@ -59,14 +59,15 @@ const App = () => {
 
   return (
     <div className="App">
-      <div className="container">
+			{/* This was solely added for some styling fanciness */}
+			<div className={walletAddress ? 'authed-container' : 'container'}>
         <div className="header-container">
           <p className="header">🖼 GIF Portal</p>
           <p className="sub-text">
             View your GIF collection in the metaverse ✨
           </p>
-          {/* Render your connect to wallet button right here */}
-          {renderNotConnectedContainer()}
+          {/* Add the condition to show this only if we don't have a wallet address */}
+          {!walletAddress && renderNotConnectedContainer()}
         </div>
         <div className="footer-container">
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
